@@ -1,0 +1,3 @@
+./dags/__pycache__
+./hooks/__pycache__
+./operators/__pycache__
