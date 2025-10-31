@@ -11,7 +11,7 @@ default_args = {
         'retries': 0
 }
 
-def do_some_stuff():
+def query_elastic():
 	es_hook = ElasticsearchHook()
 	print(es_hook.info())
 	print(es_hook.search(index='tweets',body=
@@ -30,7 +30,7 @@ dag = DAG('plugin_hook_dag',
 	catchup=False
 	)
 
-hook_es = PythonOperator(task_id='hook_es', python_callable=do_some_stuff, dag=dag)
+hook_es = PythonOperator(task_id='hook_es', python_callable=query_elastic, dag=dag)
 
 opr_end = BashOperator(task_id='opr_end', bash_command='echo "Done"', dag=dag)
 
