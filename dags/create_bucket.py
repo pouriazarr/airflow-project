@@ -16,7 +16,7 @@ default_args = {
         'retries': 0
 }
 
-def create_bucket(bucket_name='dumped_bucket',**kwargs):    
+def create_bucket(bucket_name='dumped_bucket-00099909-airflow',**kwargs):    
     try:
         # Retrieve connection details from Airflow
         conn = BaseHook.get_connection('arvan_s3_conn')
@@ -48,8 +48,6 @@ def create_bucket(bucket_name='dumped_bucket',**kwargs):
     except Exception as exc:
         logging.error(f"Unexpected error while creating bucket {bucket_name}: {exc}")
         return False
-
-
 
 
 dag = DAG('plugin_hook_dag',

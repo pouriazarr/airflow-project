@@ -15,14 +15,11 @@ default_args = {
         'retries': 0
 }
 
-
-
-
 	
 dag = DAG('curl_dump_dag',
         default_args=default_args,
         schedule_interval='@once',
-	catchup=False,template_searchpath='/home/pouria/Documents/scripts'
+	catchup=False,template_searchpath='/opt/airflow/scripts'
 	)
 
 
@@ -64,8 +61,8 @@ with DAG(
         task_id='upload_json_files',
         python_callable=upload_json_to_s3_with_hook,
         op_kwargs={
-            'bucket_name': 'jsonbucket',
-            'source_dir': '/home/pouria/Documents/airflow-proj/data/json',
+            'bucket_name': 'jsonbucketsendedfor_save39423',
+            'source_dir': '/tmp/stage/json',
             's3_prefix': 'raw/json/'                     # Optional
         },
         provide_context=True

@@ -5,7 +5,7 @@ ELASTICSEARCH_URL="http://localhost:9200"
 INDEX="sahamyab"
 DOC_TYPE="_doc"
 
-FOLDER_PATH="/home/pouria/Documents/airflow-project"
+FOLDER_PATH="/tmp/stage/json"
 
 for file in $FOLDER_PATH/*.json; do
 

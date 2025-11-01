@@ -19,6 +19,8 @@ x-airflow-common:
     - ./dags:/opt/airflow/dags
     - ./plugins:/opt/airflow/plugins
     - ./data/es_exports:/tmp/es_exports
+    - ./scripts:/opt/airflow/scripts
+    - ./data:/tmp
 
   user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-50000}"
   depends_on:

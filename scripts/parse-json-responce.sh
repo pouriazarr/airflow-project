@@ -6,7 +6,7 @@ for i in "${LIST[@]}"
 do
     echo "I'm writing the $i item ..."
     echo "##############################"
-    curl -s -H "User-Agent:Chrome/123.0" https://www.sahamyab.com/guest/twiter/list?v=0.1 | jq ".items[$i]" > ./data/stage/json/"$(date +%s).json"
+    curl -s -H "User-Agent:Chrome/123.0" https://www.sahamyab.com/guest/twiter/list?v=0.1 | jq ".items[$i]" > /tmp/stage/json/"$(date +%s).json"
     echo "Done for the $i item..."
     echo "##############################"
     sleep 5
