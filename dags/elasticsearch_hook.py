@@ -10,7 +10,7 @@ from airflow.operators.bash import BashOperator
 from elasticsearch_plugin.hooks.elasticsearch_hook import ElasticsearchHook
 
 ES_CONN_ID = "elasticsearch_default"
-INDEX_NAME = "tweets"
+INDEX_NAME = "sahamyab"
 QUERY_BODY = {
     "query": {
         "term": {
