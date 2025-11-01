@@ -17,6 +17,7 @@ x-airflow-common:
   volumes:
     - ./dags:/opt/airflow/dags
     - ./plugins:/opt/airflow/plugins
+    - ./data/es_exports:/tmp/es_exports
 
   user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-50000}"
   depends_on:
@@ -37,7 +38,7 @@ services:
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-d", "POSTGRES_DB", "-U", "airflow"]
+      test: ["CMD", "pg_isready", "-d", "airflow", "-U", "airflow"]
       interval: 5s
       retries: 5
     restart: always
