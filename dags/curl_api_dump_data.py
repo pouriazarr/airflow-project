@@ -3,9 +3,7 @@ from airflow import DAG
 from airflow.operators.bash_operator import BashOperator
 from airflow.operators.python_operator import PythonOperator
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
-from datetime import timedelta,datetime
-import pandas as pd
-import glob
+from datetime import datetime
 import os
 import logging
 

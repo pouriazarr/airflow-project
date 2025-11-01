@@ -2,7 +2,7 @@ import datetime as dt
 from airflow import DAG
 from airflow.operators.bash_operator import BashOperator
 from airflow.operators.python_operator import PythonOperator
-from elasticsearch_plugin.hooks.elasticsearch_hook import ElasticsearchHook
+
 from datetime import timedelta,datetime
 import pandas as pd
 import glob
