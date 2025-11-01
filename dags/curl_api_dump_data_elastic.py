@@ -46,28 +46,33 @@ def upload_json_to_s3_with_hook(**kwargs):
 
 
 
-
-
 # DAG Definition
 with DAG(
-    dag_id='upload_json_to_arvan_s3',
+    dag_id='upload_json_locally_and_to_arvan_s3',
     start_date=datetime(2025, 1, 1),
-    schedule_interval=None,
+    default_args=default_args,
+    schedule_interval='@once',
+	template_searchpath='/opt/airflow/scripts',
     catchup=False,
-    tags=['s3', 'arvan', 'json']
+    tags=['dump_json_locally','s3', 'arvan', 'json']
 ) as dag:
 
     send_json_to_s3 = PythonOperator(
         task_id='upload_json_files',
         python_callable=upload_json_to_s3_with_hook,
         op_kwargs={
-            'bucket_name': 'jsonbucketsendedfor_save39423',
+            'bucket_name': 'dumped-bucket-00099909-001',
             'source_dir': '/tmp/stage/json',
             's3_prefix': 'raw/json/'                     # Optional
         },
         provide_context=True
     )
+    curl_and_dump_local = BashOperator(task_id='curl_and_dump_local', bash_command='parse-json-response.sh', dag=dag)
+    send_json_to_elastic = BashOperator(task_id='send_to_elastic', bash_command='send-to-elastic.sh', dag=dag)
 
-curl_and_dump_local = BashOperator(task_id='curl_and_dump_local', bash_command='parse-json-response', dag=dag)
+    curl_and_dump_local >> send_json_to_s3 >> send_json_to_elastic
 
-curl_and_dump_local >> send_json_to_s3
+
+
+
+

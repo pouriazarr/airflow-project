@@ -1,0 +1,42 @@
+{
+  "took": 5,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 1,
+      "relation": "eq"
+    },
+    "max_score": 2.271164,
+    "hits": [
+      {
+        "_index": "sahamyab",
+        "_id": "1762011647",
+        "_score": 2.271164,
+        "_source": {
+          "id": "460065392",
+          "sendTime": "2025-11-01T15:07:08Z",
+          "sendTimePersian": "1404/08/10 18:37",
+          "parentSendTime": "2025-11-01T08:59:31Z",
+          "parentSendTimePersian": "1404/08/10 12:29",
+          "parentId": "460058904",
+          "parentSenderName": "حامی",
+          "parentSenderUsername": "hmok",
+          "parentSenderProfileImage": "7ad7b14c-6064-4a16-8ce8-ad8db3414525",
+          "parentContent": "#کفرآور چه حجم بدی داره میخوره رو مقاومت \nیعنی دارن خالی میکنن؟",
+          "senderName": "TRAIDER121",
+          "senderUsername": "rezamaryam2468",
+          "senderProfileImage": "5d74a33e-5e8c-4f82-93f6-21e7bc2546f0",
+          "content": "از فردا کفرآور راهش مشخص میشه\nنمادی با تنها ۱۸۰ میلیون برگ سهم👌",
+          "type": "quote",
+          "finalPullDatePersian": ""
+        }
+      }
+    ]
+  }
+}

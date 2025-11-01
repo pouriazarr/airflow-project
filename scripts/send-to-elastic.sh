@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-ELASTICSEARCH_URL="http://localhost:9200"
+ELASTICSEARCH_URL="http://elastic:9200"
 
 INDEX="sahamyab"
 DOC_TYPE="_doc"

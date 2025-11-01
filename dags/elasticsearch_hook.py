@@ -3,7 +3,6 @@ import json
 import csv
 import logging
 from pathlib import Path
-
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
@@ -38,56 +37,70 @@ with DAG(
     catchup=False,
     tags=["elasticsearch", "export"],
 ) as dag:
+    
+	def query_and_save(**context):
 
-    def query_and_save(**context):
-        # Hook
-        es_hook = ElasticsearchHook(elasticsearch_conn_id=ES_CONN_ID)
-        logging.info("ES cluster info: %s", es_hook.info())
+		es_hook = ElasticsearchHook(elasticsearch_conn_id=ES_CONN_ID)
+		logging.info("ES cluster info: %s", es_hook.info())
 
-        # Search
-        response = es_hook.search(index=INDEX_NAME, body=QUERY_BODY)
-        hits = response.get("hits", {}).get("hits", [])
-        logging.info("Got %d documents", len(hits))
+		response = es_hook.search(index=INDEX_NAME, body=QUERY_BODY)
+		hits = response.get("hits", {}).get("hits", [])
+		logging.info("Got %d documents", len(hits))
 
-        if not hits:
-            logging.warning("No documents matched the query – creating empty files.")
-            hits = []
+		OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+		ds_nodash = context["ds_nodash"]
+		json_path = str(OUTPUT_JSON).replace("{{ ds_nodash }}", ds_nodash)
+		csv_path = str(OUTPUT_CSV).replace("{{ ds_nodash }}", ds_nodash)
 
-        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+		# --- Save JSON (only serializable parts) ---
+		serializable_response = {
+			"took": response.get("took"),
+			"timed_out": response.get("timed_out"),
+			"_shards": response.get("_shards"),
+			"hits": {
+				"total": response["hits"].get("total"),
+				"max_score": response["hits"].get("max_score"),
+				"hits": [
+					{
+						"_index": hit.get("_index"),
+						"_id": hit.get("_id"),
+						"_score": hit.get("_score"),
+						"_source": hit.get("_source"),
+					}
+					for hit in hits
+				]
+			}
+		}
 
-        # JSON file
-        json_path = str(OUTPUT_JSON).replace("{{ ds_nodash }}", context["ds_nodash"])
-        with open(json_path, "w", encoding="utf-8") as f:
-            json.dump(response, f, ensure_ascii=False, indent=2)
-        logging.info("JSON written to %s", json_path)
+		with open(json_path, "w", encoding="utf-8") as f:
+			json.dump(serializable_response, f, ensure_ascii=False, indent=2)
+		logging.info("JSON written to %s", json_path)
 
-        #CSV file (only the `_source` fields, flattened)
-        csv_path = str(OUTPUT_CSV).replace("{{ ds_nodash }}", context["ds_nodash"])
-        if hits:
-            fieldnames = hits[0]["_source"].keys()
-            with open(csv_path, "w", newline="", encoding="utf-8") as f:
-                writer = csv.DictWriter(f, fieldnames=fieldnames)
-                writer.writeheader()
-                for hit in hits:
-                    writer.writerow(hit["_source"])
-            logging.info("CSV written to %s", csv_path)
-        else:
-            
-            Path(csv_path).touch()
-            logging.info("Empty CSV created at %s", csv_path)
+		# --- Save CSV ---
+		if hits:
+			fieldnames = hits[0]["_source"].keys()
+			with open(csv_path, "w", newline="", encoding="utf-8") as f:
+				writer = csv.DictWriter(f, fieldnames=fieldnames)
+				writer.writeheader()
+				for hit in hits:
+					writer.writerow(hit["_source"])
+			logging.info("CSV written to %s", csv_path)
+		else:
+			Path(csv_path).touch()
+			logging.info("Empty CSV created at %s", csv_path)
 
-        
-        return {"json": json_path, "csv": csv_path}
+		return {"json": json_path, "csv": csv_path}
 
-    query_task = PythonOperator(
+
+	query_task = PythonOperator(
         task_id="query_and_save",
         python_callable=query_and_save,
         provide_context=True,
     )
 
-    end_task = BashOperator(
+	end_task = BashOperator(
         task_id="done",
         bash_command='echo "Export finished – check {{ ti.xcom_pull(task_ids=\"query_and_save\")[\"json\"] }}"',
     )
 
-    query_task >> end_task
+	query_task >> end_task

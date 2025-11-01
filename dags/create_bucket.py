@@ -16,7 +16,7 @@ default_args = {
         'retries': 0
 }
 
-def create_bucket(bucket_name='dumped_bucket-00099909-airflow',**kwargs):    
+def create_bucket(bucket_name='dumped-bucket-00099909-001',**kwargs):    
     try:
         # Retrieve connection details from Airflow
         conn = BaseHook.get_connection('arvan_s3_conn')
@@ -50,7 +50,7 @@ def create_bucket(bucket_name='dumped_bucket-00099909-airflow',**kwargs):
         return False
 
 
-dag = DAG('plugin_hook_dag',
+dag = DAG('create_bucket_dag',
         default_args=default_args,
         schedule_interval='@once',
 	catchup=False

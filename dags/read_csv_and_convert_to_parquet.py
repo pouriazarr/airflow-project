@@ -2,8 +2,6 @@ import datetime as dt
 from airflow import DAG
 from airflow.operators.bash_operator import BashOperator
 from airflow.operators.python_operator import PythonOperator
-
-from datetime import timedelta,datetime
 import pandas as pd
 import glob
 
@@ -25,7 +23,7 @@ def convert_files_to_parquet(**kwargs):
         df.to_parquet( f"{LAKE}/{i.split('/')[-1].split('.')[0]}.parquet")
 
 
-dag = DAG('curl_dump_dag',
+dag = DAG('curl_csv_tweets_dump_dag',
         default_args=default_args,
         schedule_interval='@once',
 	catchup=False,template_searchpath='/opt/airflow/scripts'
@@ -33,8 +31,8 @@ dag = DAG('curl_dump_dag',
 
 get_csv_tweets = BashOperator(
     task_id='Get-CSV-Tweets',
-    bash_command= "/usr/bin/curl -s -H 'User-Agent:Chrome/133.0' https://www.sahamyab.com/guest/twiter/list?v=0.1 | "
-                  "/usr/bin/jq \'.items[] | [.id, .sendTime, .sendTimePersian, .senderName, "
+    bash_command= "curl -s -H 'User-Agent:Chrome/133.0' https://www.sahamyab.com/guest/twiter/list?v=0.1 | "
+                  "jq \'.items[] | [.id, .sendTime, .sendTimePersian, .senderName, "
                   ".senderUsername, .type, .content] | join(\",\") \' > /tmp/stage/csv/$(date +%s).csv" ,
     dag=dag,
 )
